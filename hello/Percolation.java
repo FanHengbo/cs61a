@@ -31,9 +31,9 @@ public class Percolation {
         sites = new WeightedQuickUnionUF(N * N + 2);
         for (int i = 0; i < n; ++i) {
             // Connect the top row of sites to the top root
-            sites.union(N * N, i + 2);
+            sites.union(N * N, i);
             // Connect the bottom row of sites to the bottom root
-            sites.union(N * N + 1, (N - 1) * N + 2 + i);
+            sites.union(N * N + 1, (N - 1) * N + i);
         }
     }
 
@@ -44,32 +44,37 @@ public class Percolation {
         return (row - 1) * N + col - 1;
     }
 
+    private void connectNeighborhood(int row, int col) {
+        if (row != 1) {
+            if (isOpen(row - 1, col)) {
+                sites.union(index(row, col), index(row - 1, col));
+            }
+        }
+        if (row != N) {
+            if (isOpen(row + 1, col)) {
+                sites.union(index(row, col), index(row + 1, col));
+            }
+        }
+        if (col != 1) {
+            if (isOpen(row, col - 1)) {
+                sites.union(index(row, col), index(row, col - 1));
+            }
+        }
+        if (col != N) {
+            if (isOpen(row, col + 1)) {
+                sites.union(index(row, col), index(row, col + 1));
+            }
+        }
+    }
+
     // opens the site (row, col) if it is not open already
-    // TODO: Buggy!
+    //
     public void open(int row, int col) {
         if (isOpen(row, col)) {
             return;
         }
-        boolean upper = false;
-        boolean left = false;
-        boolean right = false;
         isOpen[row - 1][col - 1] = true;
-        if (row > 1) {
-            upper = isOpen(row - 1, col) && sites.find(index(row - 1, col)) == sites.find(N * N);
-        }
-        if (col == 1) {
-            right = isOpen(row, col + 1) && sites.find(index(row, col + 1)) == sites.find(N * N);
-        }
-        else if (col == N) {
-            left = isOpen(row, col - 1) && sites.find(index(row, col - 1)) == sites.find(N * N);
-        }
-        else {
-            right = isOpen(row, col + 1) && sites.find(index(row, col + 1)) == sites.find(N * N);
-            left = isOpen(row, col - 1) && sites.find(index(row, col - 1)) == sites.find(N * N);
-        }
-        if (upper && left && right) {
-            sites.union(index(row, col), N * N);
-        }
+        connectNeighborhood(row, col);
         numOfOpen++;
     }
 
@@ -96,11 +101,29 @@ public class Percolation {
         return sites.find(N * N + 1) == sites.find(N * N);
     }
 
+    private void printGraph() {
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
+                if (isOpen[i][j]) {
+                    System.out.print("o");
+                }
+                else {
+                    System.out.print("#");
+                }
+            }
+            System.out.println();
+        }
+    }
+
     // test client (optional)
     public static void main(String[] args) {
-        Percolation p = new Percolation(3);
-        for (int i = 0; i < 3; ++i) {
-            System.out.println(p.isOpen(i + 1, 1));
-        }
+        Percolation p = new Percolation(5);
+        p.open(1, 1);
+        p.open(1, 2);
+        p.open(2, 2);
+        p.open(3, 3);
+        p.open(3, 2);
+        p.printGraph();
+        System.out.println(p.percolates());
     }
 }
