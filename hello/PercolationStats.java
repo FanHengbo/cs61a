@@ -19,10 +19,11 @@ public class PercolationStats {
         int randomRow = StdRandom.uniformInt(1, n + 1);
         int randomCol = StdRandom.uniformInt(1, n + 1);
         this.trials = trials;
-        Percolation per = new Percolation(n);
+        Percolation per;
         threshold = new double[trials];
 
         for (int i = 0; i < trials; ++i) {
+            per = new Percolation(n);
             while (!per.percolates()) {
                 while (per.isOpen(randomRow, randomCol)) {
                     randomRow = StdRandom.uniformInt(1, n + 1);
@@ -31,7 +32,6 @@ public class PercolationStats {
                 per.open(randomRow, randomCol);
             }
             threshold[i] = (double) per.numberOfOpenSites() / (double) (n * n);
-            per = new Percolation(n);
         }
     }
 

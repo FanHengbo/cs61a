@@ -4,14 +4,13 @@
  *  Last modified:     October 16, 1842
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 
 public class Percolation {
     private WeightedQuickUnionUF sites;
     private int N;
-    private Boolean[][] isOpen;
+    private boolean[][] isOpen;
     private int numOfOpen;
 
     // creates n-by-n grid, with all sites initially blocked
@@ -22,7 +21,7 @@ public class Percolation {
         numOfOpen = 0;
         N = n;
         // Initialize all the sites to be blocked
-        isOpen = new Boolean[n][n];
+        isOpen = new boolean[n][n];
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
                 isOpen[i][j] = Boolean.FALSE;
@@ -81,7 +80,7 @@ public class Percolation {
 
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
-        if (row > N || col > N) {
+        if ((long) row > N || (long) col > N) {
             throw new IllegalArgumentException("Index out of range!");
         }
         return isOpen[row - 1][col - 1];
@@ -99,6 +98,9 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
+        if (N == 1) {
+            return isOpen(1, 1);
+        }
         return sites.find(N * N + 1) == sites.find(N * N);
     }
 
@@ -118,16 +120,8 @@ public class Percolation {
 
     // test client (optional)
     public static void main(String[] args) {
-        Percolation p = new Percolation(5);
-        int randomRow = StdRandom.uniformInt(1, 6);
-        int randomCol = StdRandom.uniformInt(1, 6);
-        while (!p.percolates()) {
-            while (p.isOpen(randomRow, randomCol)) {
-                randomRow = StdRandom.uniformInt(1, 6);
-                randomCol = StdRandom.uniformInt(1, 6);
-            }
-            p.open(randomRow, randomCol);
-        }
+        Percolation p = new Percolation(1);
+        p.open(1, 1);
         p.printGraph();
         System.out.println(p.percolates());
         System.out.println(p.numberOfOpenSites());
