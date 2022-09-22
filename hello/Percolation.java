@@ -4,6 +4,7 @@
  *  Last modified:     October 16, 1842
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 
@@ -24,7 +25,7 @@ public class Percolation {
         isOpen = new Boolean[n][n];
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
-                isOpen[i][j] = false;
+                isOpen[i][j] = Boolean.FALSE;
             }
         }
         // The last two elements are top row root and bottom row root respectively
@@ -73,7 +74,7 @@ public class Percolation {
         if (isOpen(row, col)) {
             return;
         }
-        isOpen[row - 1][col - 1] = true;
+        isOpen[row - 1][col - 1] = Boolean.TRUE;
         connectNeighborhood(row, col);
         numOfOpen++;
     }
@@ -118,12 +119,17 @@ public class Percolation {
     // test client (optional)
     public static void main(String[] args) {
         Percolation p = new Percolation(5);
-        p.open(1, 1);
-        p.open(1, 2);
-        p.open(2, 2);
-        p.open(3, 3);
-        p.open(3, 2);
+        int randomRow = StdRandom.uniformInt(1, 6);
+        int randomCol = StdRandom.uniformInt(1, 6);
+        while (!p.percolates()) {
+            while (p.isOpen(randomRow, randomCol)) {
+                randomRow = StdRandom.uniformInt(1, 6);
+                randomCol = StdRandom.uniformInt(1, 6);
+            }
+            p.open(randomRow, randomCol);
+        }
         p.printGraph();
         System.out.println(p.percolates());
+        System.out.println(p.numberOfOpenSites());
     }
 }
